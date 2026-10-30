@@ -1,7 +1,8 @@
 # ComfyUI for the Whitehorse V100s (sm_70).
 #
 # Base: the same PyTorch image wyoming-kokoro already runs on these cards
-# (torch 2.10.0+cu128, arch list includes sm_70), so it is cached on
+# (torch 2.10.0+cu128, arch list includes sm_70; the build checks the compiled
+# arch flags, since get_arch_list() is empty on a runner with no GPU), so it is cached on
 # whitehorse-ai and known to work on a V100. ComfyUI's own requirements are
 # installed WITHOUT torch/torchvision/torchaudio so pip cannot swap that build
 # for one that drops Volta.
@@ -27,7 +28,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI /opt/ComfyUI \
 
 RUN grep -viE '^(torch|torchvision|torchaudio)([<>=~! \[]|$)' /opt/ComfyUI/requirements.txt > /tmp/req.txt \
  && pip install --no-cache-dir --break-system-packages -r /tmp/req.txt "certifi>=2026.10.19" \
- && python -c "import torch; assert 'sm_70' in torch.cuda.get_arch_list(), torch.cuda.get_arch_list(); print('torch', torch.__version__)" \
+ && python -c "import torch; a=torch._C._cuda_getArchFlags(); assert 'sm_70' in a, a; print('torch', torch.__version__, a)" \
  && pip freeze > /opt/pip-freeze.txt
 
 COPY workflows/ /opt/workflows/
