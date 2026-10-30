@@ -26,7 +26,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI /opt/ComfyUI \
  && git -C /opt/ComfyUI/custom_nodes/ComfyUI_IPAdapter_plus checkout "$IPADAPTER_PLUS_REF"
 
 RUN grep -viE '^(torch|torchvision|torchaudio)([<>=~! \[]|$)' /opt/ComfyUI/requirements.txt > /tmp/req.txt \
- && pip install --no-cache-dir -r /tmp/req.txt "certifi>=2026.10.19" \
+ && pip install --no-cache-dir --break-system-packages -r /tmp/req.txt "certifi>=2026.10.19" \
  && python -c "import torch; assert 'sm_70' in torch.cuda.get_arch_list(), torch.cuda.get_arch_list(); print('torch', torch.__version__)" \
  && pip freeze > /opt/pip-freeze.txt
 
